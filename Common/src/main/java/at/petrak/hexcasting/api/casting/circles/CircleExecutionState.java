@@ -4,6 +4,7 @@ import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.casting.eval.env.CircleCastEnv;
 import at.petrak.hexcasting.api.casting.eval.vm.CastingImage;
 import at.petrak.hexcasting.api.misc.Result;
+import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import at.petrak.hexcasting.api.utils.HexUtils;
 import com.mojang.datafixers.util.Pair;
@@ -112,6 +113,10 @@ public class CircleExecutionState {
                 continue;
             }
 
+            if (seenGoodPositions.size() > HexConfig.server().maxSpellCircleLength() +1) {
+                //if the slate is too big: quit it
+                return new Result.Err<>(seenGoodPositions.get(seenGoodPositions.size() - 1));
+            }
             if (seenGoodPosSet.add(herePos)) {
                 // it's new
                 seenGoodPositions.add(herePos);
