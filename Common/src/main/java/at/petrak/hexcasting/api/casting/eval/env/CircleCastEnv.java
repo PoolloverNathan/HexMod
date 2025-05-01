@@ -20,9 +20,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -172,7 +174,18 @@ public class CircleCastEnv extends CastingEnvironment {
     protected List<ItemStack> getUsableStacks(StackDiscoveryMode mode) {
         if (this.getCaster() != null)
             return getUsableStacksForPlayer(mode, null, this.getCaster());
-        return new ArrayList<>();
+
+        ArrayList<ItemStack> list = new ArrayList<>();
+        BlockEntity check = this.world.getBlockEntity(this.execState.impetusPos.above());
+        if(check instanceof Container container) {
+            for (int i = 0; i < container.getContainerSize(); i++) {
+                ItemStack itemStack = container.getItem(i);
+                if (container.canTakeItem(container, i, container.getItem(i))) {
+                    list.add(itemStack);
+                }
+            }
+        }
+        return list;
     }
 
     @Override
@@ -180,7 +193,18 @@ public class CircleCastEnv extends CastingEnvironment {
     protected List<HeldItemInfo> getPrimaryStacks() {
         if (this.getCaster() != null)
             return getPrimaryStacksForPlayer(InteractionHand.OFF_HAND, this.getCaster());
-        return List.of();
+
+        List<HeldItemInfo> list = new ArrayList<>();
+        BlockEntity check = this.world.getBlockEntity(this.execState.impetusPos.above());
+        if(check instanceof Container container) {
+            for (int i = 0; i < container.getContainerSize(); i++) {
+                ItemStack itemStack = container.getItem(i);
+                if (container.canTakeItem(container, i, container.getItem(i))) {
+                    list.add(new HeldItemInfo(itemStack, InteractionHand.OFF_HAND));
+                }
+            }
+        }
+        return list;
     }
 
     @Override
@@ -188,6 +212,17 @@ public class CircleCastEnv extends CastingEnvironment {
     public boolean replaceItem(Predicate<ItemStack> stackOk, ItemStack replaceWith, @Nullable InteractionHand hand) {
         if (this.getCaster() != null)
             return replaceItemForPlayer(stackOk, replaceWith, hand, this.getCaster());
+
+        BlockEntity check = this.world.getBlockEntity(this.execState.impetusPos.above());
+        if(check instanceof Container container) {
+            for (int i = 0; i < container.getContainerSize(); i++) {
+                ItemStack itemStack = container.getItem(i);
+                if (stackOk.test(itemStack) && container.canTakeItem(container, i, container.getItem(i))) {
+                    container.setItem(i,replaceWith);
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
