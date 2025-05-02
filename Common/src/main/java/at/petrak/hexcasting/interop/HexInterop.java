@@ -21,6 +21,7 @@ public class HexInterop {
 
     public static final class Fabric {
         public static final String TRINKETS_API_ID = "trinkets";
+        public static final String LITHIUM = "lithium";
     }
 
     public static void init() {

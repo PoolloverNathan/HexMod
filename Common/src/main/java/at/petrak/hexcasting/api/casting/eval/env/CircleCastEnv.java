@@ -24,6 +24,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -104,14 +105,6 @@ public class CircleCastEnv extends CastingEnvironment {
                 }
             }
         }
-        // Updates any inventories around
-        Optional<BaseContainerBlockEntity> check = getInv();
-        if (check.isPresent()) {
-            var container = check.get();
-            container.setChanged();
-            this.world.sendBlockUpdated(container.getBlockPos(), container.getBlockState(), container.getBlockState(), 3);
-            System.out.println("updating!");
-        }
     }
 
     @Override
@@ -191,7 +184,6 @@ public class CircleCastEnv extends CastingEnvironment {
                 //TODO: make this check for item-face extraction
                 if (container.canTakeItem(container, i, container.getItem(i))) {
                     list.add(itemStack);
-                    container.setChanged();
                 }
             }
         }
@@ -211,7 +203,6 @@ public class CircleCastEnv extends CastingEnvironment {
                 ItemStack itemStack = container.getItem(i);
                 if (container.canTakeItem(container, i, container.getItem(i))) {
                     list.add(new HeldItemInfo(itemStack, InteractionHand.OFF_HAND));
-                    container.setChanged();
                 }
             }
         }
