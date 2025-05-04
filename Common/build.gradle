@@ -30,6 +30,12 @@ repositories {
 
     maven { url "https://maven.shedaniel.me/" }
 
+    exclusiveContent {
+        forRepository {
+            maven { url = "https://api.modrinth.com/maven" }
+        }
+        filter { includeGroup "maven.modrinth" }
+    }
 }
 
 dependencies {
@@ -46,6 +52,9 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
+
+
+    implementation "maven.modrinth:lithium:$lithiumVersion"
 }
 
 test {

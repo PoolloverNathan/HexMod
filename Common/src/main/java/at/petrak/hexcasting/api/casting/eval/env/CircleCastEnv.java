@@ -14,6 +14,7 @@ import at.petrak.hexcasting.api.casting.mishaps.MishapDisallowedSpell;
 import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import at.petrak.hexcasting.common.lib.HexAttributes;
+import me.jellysquid.mods.lithium.common.block.entity.SleepingBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +25,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -263,6 +267,18 @@ public class CircleCastEnv extends CastingEnvironment {
         BlockPos[] adjacents = {pos.above(),pos.below(),pos.north(),pos.south(),pos.east(),pos.west()};
         for (var adjacent : adjacents) {
             if (this.world.getBlockEntity(adjacent) instanceof BaseContainerBlockEntity container){
+                // Due to Lithium optimizing making hoppers sleep, we need to wake them up
+                if (this.world.getBlockEntity(container.getBlockPos().below()) instanceof SleepingBlockEntity hopperSleepy
+                        && this.world.getBlockEntity(container.getBlockPos().below()) instanceof HopperBlockEntity hopper){
+                    // I hate Hoppers
+                    hopperSleepy.wakeUpNow();
+                    HopperBlockEntity.pushItemsTick(this.world,hopper.getBlockPos(),hopper.getBlockState(),hopper);
+                    System.out.println("waking up the hoppers");
+                    hopperSleepy.wakeUpNow();
+                    System.out.println("is the hopper awake?");
+                    System.out.println(hopperSleepy.isSleeping());
+                    hopper.setChanged();
+                }
                 return Optional.of(container);
             }
         }
