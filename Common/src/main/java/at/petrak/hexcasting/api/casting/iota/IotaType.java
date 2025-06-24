@@ -118,7 +118,7 @@ public abstract class IotaType<T extends Iota> {
      * }
      * </code>
      */
-    public static Iota deserialize(CompoundTag tag, ServerLevel world) {
+    public static Iota deserializeIota(CompoundTag tag, ServerLevel world) {
         var type = getTypeFromTag(tag);
         if (type == null) {
             return new GarbageIota();
@@ -135,6 +135,11 @@ public abstract class IotaType<T extends Iota> {
             deserialized = new GarbageIota();
         }
         return deserialized;
+    }
+
+    @Deprecated
+    public static Iota deserialize(CompoundTag tag, ServerLevel world) {
+        return deserializeIota(tag, world);
     }
 
     private static Component brokenIota() {
